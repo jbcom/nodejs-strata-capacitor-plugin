@@ -526,7 +526,8 @@ public class StrataPlugin extends Plugin {
         long vibrationDuration;
 
         if (duration != null) {
-            vibrationDuration = duration;
+            // Validate duration to prevent DoS attacks - limit to 10 seconds maximum
+            vibrationDuration = Math.max(0, Math.min(10000, duration));
         } else {
             // Default durations based on intensity
             if (amplitude <= 50) {

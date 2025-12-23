@@ -28,7 +28,7 @@ export function useHaptics(): UseHapticsReturn {
   }, []);
 
   const vibrate = useCallback(async (duration?: number) => {
-    await Strata.vibrate({ duration });
+    await Strata.triggerHaptics({ duration });
   }, []);
 
   return {
