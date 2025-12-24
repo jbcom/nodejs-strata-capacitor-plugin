@@ -69,15 +69,17 @@ export class StrataWeb extends WebPlugin implements StrataPlugin, StrataPlatform
 
     private handleGamepadConnected = (e: GamepadEvent): void => {
         this.gamepads[e.gamepad.index] = e.gamepad;
-        this.gamepadConnectedListeners.forEach((cb) =>
-            cb({ index: e.gamepad.index, id: e.gamepad.id })
-        );
+        this.gamepadConnectedListeners.forEach((cb) => {
+            cb({ index: e.gamepad.index, id: e.gamepad.id });
+        });
         this.notifyDeviceChange();
     };
 
     private handleGamepadDisconnected = (e: GamepadEvent): void => {
         this.gamepads[e.gamepad.index] = null;
-        this.gamepadDisconnectedListeners.forEach((cb) => cb({ index: e.gamepad.index }));
+        this.gamepadDisconnectedListeners.forEach((cb) => {
+            cb({ index: e.gamepad.index });
+        });
         this.notifyDeviceChange();
     };
 
@@ -136,7 +138,9 @@ export class StrataWeb extends WebPlugin implements StrataPlugin, StrataPlatform
 
     private notifyDeviceChange(): void {
         this.getDeviceProfile().then((profile) => {
-            this.deviceListeners.forEach((cb) => cb(profile));
+            this.deviceListeners.forEach((cb) => {
+                cb(profile);
+            });
         });
     }
 
@@ -148,7 +152,9 @@ export class StrataWeb extends WebPlugin implements StrataPlugin, StrataPlatform
                 this.getInputSnapshot().then((snapshot) => {
                     if (this.hasInputChanged(snapshot)) {
                         this.lastInputSnapshot = snapshot;
-                        this.inputListeners.forEach((cb) => cb(snapshot));
+                        this.inputListeners.forEach((cb) => {
+                            cb(snapshot);
+                        });
                     }
                 });
             }
@@ -244,12 +250,12 @@ export class StrataWeb extends WebPlugin implements StrataPlugin, StrataPlatform
         return (
             'ontouchstart' in window ||
             navigator.maxTouchPoints > 0 ||
-            (window.matchMedia && window.matchMedia('(pointer: coarse)').matches)
+            (window.matchMedia?.('(pointer: coarse)').matches ?? false)
         );
     }
 
     private hasPointer(): boolean {
-        return window.matchMedia && window.matchMedia('(pointer: fine)').matches;
+        return window.matchMedia?.('(pointer: fine)').matches ?? false;
     }
 
     async getDeviceProfile(): Promise<DeviceProfile> {
@@ -311,7 +317,6 @@ export class StrataWeb extends WebPlugin implements StrataPlugin, StrataPlatform
                     action: 'Tap or A to interact',
                     camera: 'Swipe or right stick',
                 };
-            case 'keyboard':
             default:
                 return {
                     movement: 'WASD to move',
@@ -336,9 +341,9 @@ export class StrataWeb extends WebPlugin implements StrataPlugin, StrataPlatform
         if (this.isKeyPressed(this.inputMapping.moveLeft)) leftStick.x = -1;
         if (this.isKeyPressed(this.inputMapping.moveRight)) leftStick.x = 1;
 
-        buttons['jump'] = this.isKeyPressed(this.inputMapping.jump);
-        buttons['action'] = this.isKeyPressed(this.inputMapping.action);
-        buttons['cancel'] = this.isKeyPressed(this.inputMapping.cancel);
+        buttons.jump = this.isKeyPressed(this.inputMapping.jump);
+        buttons.action = this.isKeyPressed(this.inputMapping.action);
+        buttons.cancel = this.isKeyPressed(this.inputMapping.cancel);
 
         const gamepad = this.gamepads.find((gp) => gp !== null);
         if (gamepad) {
@@ -353,9 +358,9 @@ export class StrataWeb extends WebPlugin implements StrataPlugin, StrataPlatform
             if (gamepad.axes.length > 3 && Math.abs(gamepad.axes[3]) > deadzone)
                 rightStick.y = -gamepad.axes[3];
 
-            buttons['jump'] = buttons['jump'] || (gamepad.buttons[0]?.pressed ?? false);
-            buttons['action'] = buttons['action'] || (gamepad.buttons[1]?.pressed ?? false);
-            buttons['cancel'] = buttons['cancel'] || (gamepad.buttons[2]?.pressed ?? false);
+            buttons.jump = buttons.jump || (gamepad.buttons[0]?.pressed ?? false);
+            buttons.action = buttons.action || (gamepad.buttons[1]?.pressed ?? false);
+            buttons.cancel = buttons.cancel || (gamepad.buttons[2]?.pressed ?? false);
 
             if (gamepad.buttons.length > 6) triggers.left = gamepad.buttons[6].value;
             if (gamepad.buttons.length > 7) triggers.right = gamepad.buttons[7].value;
@@ -420,8 +425,19 @@ export class StrataWeb extends WebPlugin implements StrataPlugin, StrataPlatform
         }
 
         // Gamepad haptics
-        const gamepad = this.gamepads.find((gp) => gp !== null && 'vibrationActuator' in gp) as
-            | any;
+        const gamepad = (this.gamepads.find((gp) => gp !== null && 'vibrationActuator' in gp) as unknown) as {
+            vibrationActuator?: {
+                playEffect: (
+                    type: string,
+                    options: {
+                        startDelay: number;
+                        duration: number;
+                        weakMagnitude: number;
+                        strongMagnitude: number;
+                    }
+                ) => Promise<unknown>;
+            };
+        };
         if (gamepad?.vibrationActuator) {
             const magnitudes = { light: 0.25, medium: 0.5, heavy: 1.0 };
             const magnitude = customMagnitude ?? magnitudes[intensity];
@@ -492,6 +508,7 @@ export class StrataWeb extends WebPlugin implements StrataPlugin, StrataPlatform
 
     async addListener(
         eventName: 'deviceChange' | 'inputChange' | 'gamepadConnected' | 'gamepadDisconnected',
+        // biome-ignore lint/suspicious/noExplicitAny: Capacitor uses any for listener callbacks
         callback: (data: any) => void
     ): Promise<{ remove: () => Promise<void> }> {
         const removeFromArray = <T>(arr: T[], item: T): void => {

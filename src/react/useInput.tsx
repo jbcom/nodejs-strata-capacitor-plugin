@@ -5,7 +5,7 @@ import {
     useEffect,
     useCallback,
     useMemo,
-    ReactNode,
+    type ReactNode,
 } from 'react';
 import { Strata } from '../index';
 import type { InputSnapshot, Vector2 } from '../definitions';

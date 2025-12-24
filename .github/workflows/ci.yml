@@ -2,9 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, next, beta ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, next, beta ]
+
+permissions:
+  contents: read
 
 jobs:
   build-test:
