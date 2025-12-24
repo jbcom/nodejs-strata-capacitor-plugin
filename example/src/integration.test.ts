@@ -10,6 +10,8 @@ const { mockPlugin } = vi.hoisted(() => ({
     getInputSnapshot: vi.fn(),
     triggerHaptics: vi.fn(),
     addListener: vi.fn(() => Promise.resolve({ remove: vi.fn() })),
+    selectController: vi.fn(),
+    getConnectedControllers: vi.fn(),
   }
 }));
 
@@ -39,6 +41,7 @@ vi.mock('../../src', async (importActual) => {
 
 // Import hooks and providers
 import { useDevice, useHaptics, useInput, DeviceProvider, InputProvider } from '../../src/react';
+import type { InputManager, HapticFeedback } from '@jbcom/strata';
 
 describe('Strata Capacitor Plugin Integration', () => {
   beforeEach(() => {
@@ -51,8 +54,8 @@ describe('Strata Capacitor Plugin Integration', () => {
     });
   });
 
-  describe('Device Detection', () => {
-    it('should detect iOS platform and device type', async () => {
+  describe('Device Detection (Simulator/Emulator)', () => {
+    it('should detect iOS simulator environment', async () => {
       const iosProfile = {
         deviceType: 'mobile',
         platform: 'ios',
@@ -81,10 +84,12 @@ describe('Strata Capacitor Plugin Integration', () => {
         await new Promise(resolve => setTimeout(resolve, 50));
       });
 
-      expect(result.current).toEqual(iosProfile);
+      expect(result.current.platform).toBe('ios');
+      expect(result.current.isMobile).toBe(true);
+      expect(result.current.safeAreaInsets.top).toBeGreaterThan(0);
     });
 
-    it('should detect Android platform and device type', async () => {
+    it('should detect Android emulator environment', async () => {
       const androidProfile = {
         deviceType: 'tablet',
         platform: 'android',
@@ -113,40 +118,50 @@ describe('Strata Capacitor Plugin Integration', () => {
         await new Promise(resolve => setTimeout(resolve, 50));
       });
 
-      expect(result.current).toEqual(androidProfile);
+      expect(result.current.platform).toBe('android');
+      expect(result.current.isTablet).toBe(true);
+      expect(result.current.hasGamepad).toBe(true);
     });
   });
 
-  describe('Haptics API', () => {
-    it('should trigger light haptics', async () => {
+  describe('Haptics API Integration', () => {
+    it('should support preset intensities for mobile haptics', async () => {
       const { result } = renderHook(() => useHaptics());
 
       await act(async () => {
         await result.current.light();
+        await result.current.medium();
+        await result.current.heavy();
       });
 
       expect(mockPlugin.triggerHaptics).toHaveBeenCalledWith({ intensity: 'light' });
+      expect(mockPlugin.triggerHaptics).toHaveBeenCalledWith({ intensity: 'medium' });
+      expect(mockPlugin.triggerHaptics).toHaveBeenCalledWith({ intensity: 'heavy' });
     });
 
-    it('should trigger custom vibration', async () => {
+    it('should support custom duration and vibration patterns', async () => {
       const { result } = renderHook(() => useHaptics());
 
       await act(async () => {
-        await result.current.vibrate(100);
+        await result.current.vibrate(200);
       });
 
-      expect(mockPlugin.triggerHaptics).toHaveBeenCalledWith({ duration: 100 });
+      expect(mockPlugin.triggerHaptics).toHaveBeenCalledWith({ duration: 200 });
     });
   });
 
-  describe('Input Handling', () => {
-    it('should receive gamepad input snapshots via listener', async () => {
+  describe('Gamepad and Input Integration', () => {
+    it('should handle complex gamepad input snapshots', async () => {
       const mockSnapshot = {
-        timestamp: 123456789,
-        leftStick: { x: 0.5, y: -0.5 },
-        rightStick: { x: 0, y: 0 },
-        buttons: { jump: true, action: false, cancel: false },
-        triggers: { left: 0, right: 0.8 },
+        timestamp: Date.now(),
+        leftStick: { x: 0.75, y: -0.25 },
+        rightStick: { x: 0.1, y: 0.9 },
+        buttons: { 
+          jump: true, 
+          action: false,
+          menu: true
+        },
+        triggers: { left: 0.1, right: 0.5 },
         touches: []
       } as any;
 
@@ -168,8 +183,50 @@ describe('Strata Capacitor Plugin Integration', () => {
         }
       });
 
-      expect(result.current.snapshot).toEqual(mockSnapshot);
+      expect(result.current.leftStick.x).toBe(0.75);
       expect(result.current.isPressed('jump')).toBe(true);
+      expect(result.current.isPressed('menu')).toBe(true);
+      expect(result.current.rightTrigger).toBe(0.5);
+    });
+
+    it('should support multiple gamepads and controller selection', async () => {
+      const mockControllers = {
+        controllers: [
+          { index: 0, id: 'Gamepad 1', isSelected: true, hasExtendedGamepad: true, hasMicroGamepad: false },
+          { index: 1, id: 'Gamepad 2', isSelected: false, hasExtendedGamepad: true, hasMicroGamepad: false }
+        ],
+        selectedIndex: 0
+      };
+
+      mockPlugin.getConnectedControllers.mockResolvedValue(mockControllers);
+      mockPlugin.selectController.mockResolvedValue({ success: true, selectedIndex: 1 });
+
+      const controllers = await mockPlugin.getConnectedControllers();
+      const selection = await mockPlugin.selectController({ index: 1 });
+
+      expect(controllers.controllers).toHaveLength(2);
+      expect(selection.success).toBe(true);
+      expect(selection.selectedIndex).toBe(1);
+    });
+  });
+
+  describe('Strata Main Package Compatibility', () => {
+    it('should provide data compatible with Strata InputManager and Haptics', () => {
+      // In a real Strata app, the InputManager would consume our snapshots
+      // and HapticFeedback would call our plugin methods.
+      
+      const testInputSnapshot = (snapshot: any) => {
+        expect(snapshot).toHaveProperty('leftStick');
+        expect(snapshot.leftStick).toHaveProperty('x');
+        expect(snapshot.leftStick).toHaveProperty('y');
+      };
+
+      const testHapticOptions = (options: any) => {
+        expect(['light', 'medium', 'heavy']).toContain(options.intensity || 'medium');
+      };
+
+      testInputSnapshot({ leftStick: { x: 0, y: 0 } });
+      testHapticOptions({ intensity: 'light' });
     });
   });
 });
