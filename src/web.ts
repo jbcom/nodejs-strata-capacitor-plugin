@@ -26,10 +26,9 @@ export class StrataWeb extends WebPlugin implements StrataPlugin {
   }
 
   async setScreenOrientation(options: OrientationOptions): Promise<void> {
-    const orientation = screen.orientation as any;
-    if (orientation?.lock) {
+    if (screen.orientation && 'lock' in screen.orientation) {
       try {
-        await orientation.lock(options.orientation);
+        await (screen.orientation as unknown as { lock: (orientation: string) => Promise<void> }).lock(options.orientation);
       } catch (e) {
         console.warn('Orientation lock failed:', e);
       }
@@ -66,8 +65,10 @@ export class StrataWeb extends WebPlugin implements StrataPlugin {
       const viewport = document.querySelector('meta[name=viewport]');
       if (viewport) {
         const content = viewport.getAttribute('content') || '';
-        if (!content.includes('user-scalable=no')) {
-          viewport.setAttribute('content', `${content}, user-scalable=no`);
+        const parts = content.split(',').map(p => p.trim()).filter(p => p !== '');
+        if (!parts.some(p => p.startsWith('user-scalable='))) {
+          parts.push('user-scalable=no');
+          viewport.setAttribute('content', parts.join(', '));
         }
       }
     }

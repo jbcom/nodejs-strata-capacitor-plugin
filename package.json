@@ -24,7 +24,13 @@
     "lint:fix": "biome lint --write src/",
     "test": "vitest run"
   },
-  "keywords": ["capacitor", "strata", "mobile", "input", "haptics"],
+  "keywords": [
+    "capacitor",
+    "strata",
+    "mobile",
+    "input",
+    "haptics"
+  ],
   "author": "Jon Bogaty <jon@jonbogaty.com>",
   "license": "MIT",
   "repository": {
@@ -42,6 +48,7 @@
     "@biomejs/biome": "^2.3.0",
     "@capacitor/cli": "^8.0.0",
     "@types/react": "^19.0.0",
+    "jsdom": "^27.3.0",
     "rimraf": "^6.1.0",
     "typescript": "^5.9.0",
     "vitest": "^2.1.0"

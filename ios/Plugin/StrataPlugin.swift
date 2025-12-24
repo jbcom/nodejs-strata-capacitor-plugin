@@ -73,7 +73,7 @@ public class StrataPlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc func getSafeAreaInsets(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
-            let window = UIApplication.shared.windows.first
+            let window = self.bridge?.viewController?.view.window
             let insets = window?.safeAreaInsets ?? .zero
             call.resolve([
                 "top": insets.top,

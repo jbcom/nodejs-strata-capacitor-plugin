@@ -58,15 +58,25 @@ public class StrataPlugin extends Plugin {
     @PluginMethod
     public void getSafeAreaInsets(PluginCall call) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            View decorView = getActivity().getWindow().getDecorView();
-            WindowInsetsCompat insets = WindowInsetsCompat.toWindowInsetsCompat(decorView.getRootWindowInsets());
-            
-            JSObject ret = new JSObject();
-            ret.put("top", insets.getInsets(WindowInsetsCompat.Type.systemBars()).top);
-            ret.put("right", insets.getInsets(WindowInsetsCompat.Type.systemBars()).right);
-            ret.put("bottom", insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom);
-            ret.put("left", insets.getInsets(WindowInsetsCompat.Type.systemBars()).left);
-            call.resolve(ret);
+            getActivity().runOnUiThread(() -> {
+                View decorView = getActivity().getWindow().getDecorView();
+                android.view.WindowInsets rootWindowInsets = decorView.getRootWindowInsets();
+                
+                JSObject ret = new JSObject();
+                if (rootWindowInsets != null) {
+                    WindowInsetsCompat insets = WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets);
+                    ret.put("top", insets.getInsets(WindowInsetsCompat.Type.systemBars()).top);
+                    ret.put("right", insets.getInsets(WindowInsetsCompat.Type.systemBars()).right);
+                    ret.put("bottom", insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom);
+                    ret.put("left", insets.getInsets(WindowInsetsCompat.Type.systemBars()).left);
+                } else {
+                    ret.put("top", 0);
+                    ret.put("right", 0);
+                    ret.put("bottom", 0);
+                    ret.put("left", 0);
+                }
+                call.resolve(ret);
+            });
         } else {
             JSObject ret = new JSObject();
             ret.put("top", 0);
