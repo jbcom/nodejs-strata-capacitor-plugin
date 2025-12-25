@@ -177,6 +177,17 @@ public class StrataPlugin extends Plugin {
         return getContext().getPackageManager().hasSystemFeature("android.hardware.touchscreen");
     }
 
+    private boolean hasPointerDevice() {
+        int[] deviceIds = InputDevice.getDeviceIds();
+        for (int deviceId : deviceIds) {
+            InputDevice dev = InputDevice.getDevice(deviceId);
+            if (dev != null && (dev.getSources() & InputDevice.SOURCE_MOUSE) == InputDevice.SOURCE_MOUSE) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private String getOrientation() {
         Configuration config = getContext().getResources().getConfiguration();
         if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
