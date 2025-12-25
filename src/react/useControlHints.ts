@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Strata } from '../index';
 import type { ControlHints } from '../definitions';
-import { useDevice } from './useDevice';
 
 const defaultHints: ControlHints = {
     movement: 'WASD to move',
@@ -11,8 +10,6 @@ const defaultHints: ControlHints = {
 
 export function useControlHints(): ControlHints {
     const [hints, setHints] = useState<ControlHints>(defaultHints);
-    const device = useDevice();
-
     useEffect(() => {
         let mounted = true;
 
@@ -29,7 +26,7 @@ export function useControlHints(): ControlHints {
         return () => {
             mounted = false;
         };
-    }, [device.inputMode]);
+    }, []);
 
     return hints;
 }
