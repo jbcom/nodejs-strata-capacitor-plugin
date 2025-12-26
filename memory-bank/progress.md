@@ -1,4 +1,29 @@
-# Progress - Strata Game Integration and Publishing
+# Progress
+
+## Session: 2025-12-26 (Continued)
+
+### Completed - Game Standardization
+
+All public arcade-cabinet TypeScript games are now:
+1. **Deployed to GitHub Pages** and verified working:
+   - https://arcade-cabinet.github.io/protocol-silent-night/ ✅
+   - https://arcade-cabinet.github.io/rivermarsh/ ✅
+   - https://arcade-cabinet.github.io/otter-river-rush/ ✅
+
+2. **Integrated with @strata/capacitor-plugin**:
+   - PR #18 merged to protocol-silent-night
+   - PR #91 merged to rivermarsh
+   - PR #56 merged to otter-river-rush
+
+3. **Strata Capacitor Plugin enhancements**:
+   - Added Storage API (setItem, getItem, removeItem, keys, clear)
+   - Added useStorage React hook
+   - Created reusable GitHub Actions workflow
+   - Created comprehensive integration documentation
+   - Addressed AI reviewer feedback (removed || true from tests, updated docs to use Strata API)
+
+### PR Status
+- strata-game-library/capacitor-plugin PR #14: Open with review feedback addressed - Strata Game Integration and Publishing
 
 ## Session: 2025-12-26 - COMPLETED ✅
 
