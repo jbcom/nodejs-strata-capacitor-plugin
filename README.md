@@ -1,6 +1,13 @@
 # @strata/capacitor-plugin
 
-Cross-platform input, device detection, and haptics for Strata 3D games. Works with Capacitor for iOS/Android native apps, Electron for desktop, and pure web.
+[![npm version](https://img.shields.io/npm/v/@strata/capacitor-plugin.svg)](https://www.npmjs.com/package/@strata/capacitor-plugin)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## 🏢 Enterprise Context
+
+**Strata** is the Games & Procedural division of the [jbcom enterprise](https://jbcom.github.io). This plugin is part of a coherent suite of specialized tools, sharing a unified design system and interconnected with sibling organizations like [Agentic](https://agentic.dev) and [Extended Data](https://extendeddata.dev).
+
+Cross-platform input, device detection, and haptics for [Strata 3D](https://strata.game) games. Works with Capacitor for iOS/Android native apps, Electron for desktop, and pure web.
 
 ## Features
 
