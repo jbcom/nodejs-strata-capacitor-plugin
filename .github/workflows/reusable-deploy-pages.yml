@@ -1,0 +1,118 @@
+# Reusable workflow for deploying Strata games to GitHub Pages
+# Games can call this workflow to standardize their deployment process
+#
+# Usage in your game's workflow:
+# ```yaml
+# jobs:
+#   deploy:
+#     uses: strata-game-library/capacitor-plugin/.github/workflows/reusable-deploy-pages.yml@main
+#     with:
+#       node-version: '20'
+#       package-manager: 'pnpm'
+#       build-command: 'pnpm build'
+#       dist-path: './dist'
+# ```
+
+name: Reusable Deploy to GitHub Pages
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'Node.js version to use'
+        required: false
+        type: string
+        default: '20'
+      package-manager:
+        description: 'Package manager (npm, pnpm, yarn)'
+        required: false
+        type: string
+        default: 'pnpm'
+      pnpm-version:
+        description: 'pnpm version (if using pnpm)'
+        required: false
+        type: string
+        default: '10'
+      build-command:
+        description: 'Command to build the project'
+        required: false
+        type: string
+        default: 'pnpm build'
+      dist-path:
+        description: 'Path to the built files'
+        required: false
+        type: string
+        default: './dist'
+      install-command:
+        description: 'Command to install dependencies'
+        required: false
+        type: string
+        default: 'pnpm install --frozen-lockfile'
+      working-directory:
+        description: 'Working directory for build commands'
+        required: false
+        type: string
+        default: '.'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        if: inputs.package-manager == 'pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ inputs.pnpm-version }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: ${{ inputs.package-manager }}
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Install dependencies
+        working-directory: ${{ inputs.working-directory }}
+        run: ${{ inputs.install-command }}
+
+      - name: Build
+        working-directory: ${{ inputs.working-directory }}
+        run: ${{ inputs.build-command }}
+        env:
+          # Automatically set base URL for GitHub Pages
+          VITE_BASE_URL: /${{ github.event.repository.name }}/
+          # Also support other bundlers
+          PUBLIC_URL: /${{ github.event.repository.name }}/
+          BASE_URL: /${{ github.event.repository.name }}/
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ inputs.working-directory }}/${{ inputs.dist-path }}
+
+  deploy:
+    name: Deploy
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
