@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Strata } from '../index';
 import type { StorageOptions, StorageResult } from '../definitions';
 
@@ -30,90 +30,106 @@ import type { StorageOptions, StorageResult } from '../definitions';
 export function useStorage(namespace = 'strata') {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
+    const pendingOps = useRef(0);
 
     const options: StorageOptions = useMemo(() => ({ namespace }), [namespace]);
+
+    const startOperation = useCallback(() => {
+        pendingOps.current++;
+        setLoading(true);
+        setError(null);
+    }, []);
+
+    const endOperation = useCallback(() => {
+        pendingOps.current--;
+        if (pendingOps.current === 0) {
+            setLoading(false);
+        }
+    }, []);
+
+    const normalizeError = useCallback((e: unknown): Error => {
+        return e instanceof Error ? e : new Error(String(e));
+    }, []);
 
     /**
      * Save game data to persistent storage.
      */
     const saveGame = useCallback(async <T = unknown>(key: string, value: T): Promise<void> => {
-        setLoading(true);
-        setError(null);
+        startOperation();
         try {
             await Strata.setItem(key, value, options);
         } catch (e) {
-            setError(e instanceof Error ? e : new Error(String(e)));
-            throw e;
+            const err = normalizeError(e);
+            setError(err);
+            throw err;
         } finally {
-            setLoading(false);
+            endOperation();
         }
-    }, [options]);
+    }, [options, startOperation, endOperation, normalizeError]);
 
     /**
      * Load game data from persistent storage.
      */
     const loadGame = useCallback(async <T = unknown>(key: string): Promise<StorageResult<T>> => {
-        setLoading(true);
-        setError(null);
+        startOperation();
         try {
             const result = await Strata.getItem<T>(key, options);
             return result;
         } catch (e) {
-            setError(e instanceof Error ? e : new Error(String(e)));
+            setError(normalizeError(e));
             return { value: null, exists: false };
         } finally {
-            setLoading(false);
+            endOperation();
         }
-    }, [options]);
+    }, [options, startOperation, endOperation, normalizeError]);
 
     /**
      * Delete a specific key from storage.
      */
     const deleteGame = useCallback(async (key: string): Promise<void> => {
-        setLoading(true);
-        setError(null);
+        startOperation();
         try {
             await Strata.removeItem(key, options);
         } catch (e) {
-            setError(e instanceof Error ? e : new Error(String(e)));
-            throw e;
+            const err = normalizeError(e);
+            setError(err);
+            throw err;
         } finally {
-            setLoading(false);
+            endOperation();
         }
-    }, [options]);
+    }, [options, startOperation, endOperation, normalizeError]);
 
     /**
      * Get all save keys in the namespace.
      */
     const listSaves = useCallback(async (): Promise<string[]> => {
-        setLoading(true);
-        setError(null);
+        startOperation();
         try {
             const { keys } = await Strata.keys(options);
             return keys;
         } catch (e) {
-            setError(e instanceof Error ? e : new Error(String(e)));
+            setError(normalizeError(e));
             return [];
         } finally {
-            setLoading(false);
+            endOperation();
         }
-    }, [options]);
+    }, [options, startOperation, endOperation, normalizeError]);
 
     /**
      * Clear all game data in the namespace.
      */
     const clearAllSaves = useCallback(async (): Promise<void> => {
-        setLoading(true);
-        setError(null);
+        startOperation();
         try {
             await Strata.clear(options);
         } catch (e) {
-            setError(e instanceof Error ? e : new Error(String(e)));
-            throw e;
+            const err = normalizeError(e);
+            setError(err);
+            throw err;
         } finally {
-            setLoading(false);
+            endOperation();
         }
-    }, [options]);
+    }, [options, startOperation, endOperation, normalizeError]);
 
     return {
         saveGame,

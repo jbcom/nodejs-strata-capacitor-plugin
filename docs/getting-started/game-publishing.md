@@ -156,30 +156,26 @@ function SaveLoadMenu() {
 ### Auto-Save Pattern
 
 ```typescript
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useStorage } from '@strata/capacitor-plugin/react';
 import { useGameStore } from './stores/gameStore';
 
 export function useAutoSave() {
-  const gameState = useGameStore();
   const { saveGame } = useStorage('mygame');
-  const gameStateRef = useRef(gameState);
-
-  // Keep ref updated to avoid stale closures
-  useEffect(() => {
-    gameStateRef.current = gameState;
-  }, [gameState]);
 
   useEffect(() => {
     const interval = setInterval(async () => {
+      // Get latest state directly from the store inside the interval
+      // This avoids stale closures and unnecessary effect re-runs
+      const gameState = useGameStore.getState();
       await saveGame('auto-save', {
         timestamp: Date.now(),
-        state: gameStateRef.current,
+        state: gameState,
       });
     }, 30000); // Auto-save every 30 seconds
 
     return () => clearInterval(interval);
-  }, [saveGame]);
+  }, [saveGame]); // Only depends on saveGame, not gameState
 }
 ```
 

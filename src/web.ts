@@ -568,7 +568,8 @@ export class StrataWeb extends WebPlugin implements StrataPlugin, StrataPlatform
         try {
             localStorage.setItem(storageKey, JSON.stringify(value));
         } catch (e) {
-            console.warn('Strata: Failed to save to localStorage', e);
+            console.warn('Strata: Failed to save to localStorage', { key: storageKey, error: e });
+            throw e;
         }
     }
 
