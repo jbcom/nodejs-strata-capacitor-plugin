@@ -1,3 +1,11 @@
+## [1.0.2](https://github.com/strata-game-library/capacitor-plugin/compare/v1.0.1...v1.0.2) (2025-12-27)
+
+
+### Bug Fixes
+
+* **cd:** use CI_GITHUB_TOKEN for semantic-release ([#21](https://github.com/strata-game-library/capacitor-plugin/issues/21)) ([3bca200](https://github.com/strata-game-library/capacitor-plugin/commit/3bca200152b9541be6437c61b732ff3251da792f))
+* **cd:** use GITHUB_TOKEN for semantic-release ([#20](https://github.com/strata-game-library/capacitor-plugin/issues/20)) ([3da8110](https://github.com/strata-game-library/capacitor-plugin/commit/3da811091c1c6803b4cceadd91d3ecdfb058a250))
+
 ## [1.0.1](https://github.com/strata-game-library/capacitor-plugin/compare/v1.0.0...v1.0.1) (2025-12-27)
 
 
