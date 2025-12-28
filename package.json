@@ -23,8 +23,8 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "clean": "rimraf dist",
     "typecheck": "tsc --noEmit",
     "lint": "biome lint src/",
@@ -72,6 +72,7 @@
     "jsdom": "^27.3.0",
     "rimraf": "^6.1.0",
     "semantic-release": "^25.0.2",
+    "tsup": "^8.5.0",
     "typescript": "^5.9.0",
     "vitest": "^4.0.16"
   },
