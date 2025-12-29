@@ -4,7 +4,7 @@ import type {
   InputMapping,
   HapticsOptions,
   ControlHints,
-} from './definitions';
+} from './definitions.js';
 
 export interface StrataPlatformAdapter {
   getDeviceProfile(): Promise<DeviceProfile>;
@@ -29,4 +29,4 @@ export type {
   InputMapping,
   HapticsOptions,
   ControlHints,
-} from './definitions';
+} from './definitions.js';

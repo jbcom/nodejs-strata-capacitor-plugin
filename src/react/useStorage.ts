@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { Strata } from '../index';
-import type { StorageOptions, StorageResult } from '../definitions';
+import { Strata } from '../index.js';
+import type { StorageOptions, StorageResult } from '../definitions.js';
 
 /**
  * React hook for using Strata's persistent storage API.

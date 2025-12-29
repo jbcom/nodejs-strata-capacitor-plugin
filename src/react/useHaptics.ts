@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
-import { Strata } from '../index';
-import type { HapticsOptions } from '../definitions';
+import { Strata } from '../index.js';
+import type { HapticsOptions } from '../definitions.js';
 
 interface UseHapticsReturn {
   trigger: (options: HapticsOptions) => Promise<void>;

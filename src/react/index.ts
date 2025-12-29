@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Strata } from '../index';
-import type { DeviceInfo, SafeAreaInsets } from '../definitions';
+import { Strata } from '../index.js';
+import type { DeviceInfo, SafeAreaInsets } from '../definitions.js';
 
-export { useDevice, DeviceProvider, DeviceContext } from './useDevice';
-export { useInput, InputProvider, InputContext } from './useInput';
-export { useHaptics } from './useHaptics';
-export { useControlHints } from './useControlHints';
-export { useStorage } from './useStorage';
+export { useDevice, DeviceProvider, DeviceContext } from './useDevice.js';
+export { useInput, InputProvider, InputContext } from './useInput.js';
+export { useHaptics } from './useHaptics.js';
+export { useControlHints } from './useControlHints.js';
+export { useStorage } from './useStorage.js';
 
 export function useStrata() {
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);

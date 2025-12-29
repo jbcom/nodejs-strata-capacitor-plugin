@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { StrataWeb } from './web';
+import { StrataWeb } from './web.js';
 
 describe('StrataWeb', () => {
   beforeEach(() => {

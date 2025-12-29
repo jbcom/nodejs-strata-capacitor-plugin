@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { Strata } from '../index';
-import type { DeviceProfile } from '../definitions';
+import { Strata } from '../index.js';
+import type { DeviceProfile } from '../definitions.js';
 
 const defaultProfile: DeviceProfile = {
   deviceType: 'desktop',
