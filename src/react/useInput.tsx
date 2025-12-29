@@ -7,8 +7,8 @@ import {
     useMemo,
     type ReactNode,
 } from 'react';
-import { Strata } from '../index';
-import type { InputSnapshot, Vector2 } from '../definitions';
+import { Strata } from '../index.js';
+import type { InputSnapshot, Vector2 } from '../definitions.js';
 
 const defaultSnapshot: InputSnapshot = {
     timestamp: 0,

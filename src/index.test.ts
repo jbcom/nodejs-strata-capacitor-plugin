@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { hello, version } from './index';
+import { hello, version } from './index.js';
 
 describe('plugin', () => {
   it('should return version', () => {

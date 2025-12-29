@@ -18,9 +18,9 @@ import type {
     StorageOptions,
     StorageResult,
     StorageKeysResult,
-} from './definitions';
-import { DEFAULT_INPUT_MAPPING as DEFAULT_MAPPING } from './definitions';
-import type { StrataPlatformAdapter } from './contract';
+} from './definitions.js';
+import { DEFAULT_INPUT_MAPPING as DEFAULT_MAPPING } from './definitions.js';
+import type { StrataPlatformAdapter } from './contract.js';
 
 type ListenerCallback<T> = (data: T) => void;
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Strata } from '../index';
-import type { ControlHints } from '../definitions';
+import { Strata } from '../index.js';
+import type { ControlHints } from '../definitions.js';
 
 const defaultHints: ControlHints = {
     movement: 'WASD to move',
