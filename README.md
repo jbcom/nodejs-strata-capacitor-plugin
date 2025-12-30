@@ -1,75 +1,45 @@
-# @strata/capacitor-plugin
+# Org-Specific Overrides
 
-[![npm version](https://img.shields.io/npm/v/@strata/capacitor-plugin.svg)](https://www.npmjs.com/package/@strata/capacitor-plugin)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+Place files here to override enterprise defaults from jbcom/control-center.
 
-Cross-platform input, device detection, and haptics for [Strata 3D](https://strata.game) games. Works with Capacitor for iOS/Android native apps, Electron for desktop, and pure web.
+## Directory Structure
 
-## 📚 Documentation
+```
+repository-files/
+├── always-sync/          # From enterprise (don't edit)
+├── initial-only/         # From enterprise (don't edit)  
+├── python/               # From enterprise (don't edit)
+├── nodejs/               # From enterprise (don't edit)
+├── go/                   # From enterprise (don't edit)
+├── rust/                 # From enterprise (don't edit)
+├── terraform/            # From enterprise (don't edit)
+└── org-overrides/        # YOUR ORG CUSTOMIZATIONS HERE
+    ├── .github/
+    │   └── workflows/    # Org-specific workflows
+    ├── .cursor/
+    │   └── rules/        # Org-specific Cursor rules
+    ├── CLAUDE.md         # Org-specific Claude instructions
+    └── AGENTS.md         # Org-specific agent instructions
+```
 
-**Full documentation is available at [strata.game/mobile/capacitor](https://strata.game/mobile/capacitor/)**
+## Merge Order
 
----
+When syncing to repos, files are applied in this order:
+1. Enterprise `always-sync/` (base)
+2. Language-specific rules (python/, nodejs/, etc.)
+3. **Org overrides** (this directory - wins on conflicts)
+4. `initial-only/` (only if file doesn't exist)
 
-## 🏢 Enterprise Context
+## Examples
 
-**Strata** is the Games & Procedural division of the [jbcom enterprise](https://jbcom.github.io). This plugin is part of a coherent suite of specialized tools, sharing a unified design system and interconnected with sibling organizations like [Agentic](https://agentic.dev) and [Extended Data](https://extendeddata.dev).
-
-## Features
-
-- **Device Detection** - Platform, device type, input mode detection
-- **Unified Input** - Touch, keyboard, and gamepad abstraction
-- **Haptic Feedback** - Device vibration and gamepad rumble
-- **Screen Orientation** - Lock/unlock orientation
-- **Safe Area Insets** - Accurate safe area for notched screens
-- **React Hooks** - Ready-to-use hooks for React/R3F integration
-
-## Installation
-
+### Override CI workflow for your org
 ```bash
-pnpm install @strata/capacitor-plugin
-npx cap sync
+cp repository-files/always-sync/.github/workflows/ci.yml \
+   repository-files/org-overrides/.github/workflows/ci.yml
+# Then edit ci.yml with org-specific changes
 ```
 
-## Quick Start
-
-```tsx
-import { DeviceProvider, useDevice, useInput, useHaptics } from '@strata/capacitor-plugin/react';
-
-function App() {
-  return (
-    <DeviceProvider>
-      <Game />
-    </DeviceProvider>
-  );
-}
-
-function Game() {
-  const device = useDevice();
-  const { leftStick } = useInput();
-  const { medium } = useHaptics();
-  
-  return <GameCanvas />;
-}
+### Add org-specific Cursor rule
+```bash
+echo "# My Org Rule" > repository-files/org-overrides/.cursor/rules/my-org.mdc
 ```
-
-## Platform Support
-
-| Feature | Web | iOS | Android | Electron |
-|---------|-----|-----|---------|----------|
-| Device Detection | ✅ | ✅ | ✅ | ✅ |
-| Touch Input | ✅ | ✅ | ✅ | ✅ |
-| Keyboard Input | ✅ | ⚠️ | ⚠️ | ✅ |
-| Gamepad Input | ✅ | ⚠️ | ⚠️ | ✅ |
-| Device Haptics | ⚠️ | ✅ | ✅ | ❌ |
-| Gamepad Haptics | ✅ | ❌ | ❌ | ✅ |
-
-## Related
-
-- [Strata Documentation](https://strata.game) - Full documentation
-- [Strata Core](https://github.com/strata-game-library/core) - Main library
-- [React Native Plugin](https://github.com/strata-game-library/react-native-plugin) - React Native version
-
-## License
-
-MIT © [Jon Bogaty](https://github.com/jbcom)
