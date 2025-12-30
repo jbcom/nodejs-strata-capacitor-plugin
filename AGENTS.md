@@ -1,183 +1,36 @@
-# AGENTS.md
+# 🤖 Strata Agentic Instructions
 
-Comprehensive instructions for AI agents working with this repository.
+This document provides a unified set of instructions for AI agents (Cursor, Jules, Claude) working within the Strata ecosystem.
 
-## Agent Types
+## 🌌 Core Philosophy
+Strata is a high-performance 3D game framework for React. Efficiency, modularity, and object reuse are paramount.
 
-| Agent | Best For | Context File |
-|-------|----------|--------------|
-| **Claude** | Complex reasoning, architecture, cross-repo work | `CLAUDE.md` |
-| **Copilot** | Issue kickoffs, targeted fixes, code generation | `.github/copilot-instructions.md` |
-| **Cursor** | IDE-integrated development | `.cursor/rules/*.mdc` |
+## 🛠️ Development Standards
 
-## Before Starting Any Task
+### 1. No React in Core
+All logic in `src/core/` must be pure TypeScript. No React imports, no hooks. This ensures core algorithms are portable and testable.
 
-### 1. Check Context
-```bash
-# Current focus and recent decisions
-cat memory-bank/activeContext.md
+### 2. Performance & 3D
+- **Object Reuse**: Never create geometries or materials in a render loop. Use `useMemo`.
+- **Framerate**: Keep `useFrame` logic minimal.
+- **Math**: Use the centralized math utilities in `src/core/math/`.
 
-# Session progress
-cat memory-bank/progress.md
-```
+### 3. Documentation (TypeDoc)
+- Every public function/class must have a TSDoc comment.
+- Docs are automatically synced to the central [strata-game-library.github.io](https://strata-game-library.github.io) site.
 
-### 2. Understand the Request
-- Read the issue/PR description completely
-- Check for linked issues or PRs
-- Look for acceptance criteria
+### 4. Git & Commits
+- Use Conventional Commits.
+- One PR per feature.
+- Always include a summary of changes for the next agent session.
 
-### 3. Check Existing Patterns
-```bash
-# Recent commits show coding patterns
-git log --oneline -10
+## 🤖 Interaction Commands
 
-# Similar files show conventions
-find . -name "*.py" | head -5 | xargs head -50
-```
+| Command | Action |
+|---------|--------|
+| `/cursor review` | Trigger a Cursor AI review of the current PR |
+| `/jules [prompt]` | Start a Jules session for high-level tasks |
+| `@claude [prompt]` | Interactive help on PRs and Issues |
 
-## Development Commands
-
-<!-- These will be overridden by language-specific instructions -->
-
-### Testing
-```bash
-# Run tests (check package.json or pyproject.toml for exact command)
-npm test        # Node.js
-uv run pytest   # Python
-go test ./...   # Go
-```
-
-### Linting
-```bash
-npm run lint    # Node.js
-uvx ruff check  # Python
-golangci-lint run  # Go
-```
-
-### Building
-```bash
-npm run build   # Node.js
-uv build        # Python
-go build        # Go
-```
-
-## Commit Message Format
-
-Use [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-<type>(<scope>): <description>
-
-[optional body]
-
-[optional footer]
-```
-
-### Types
-- `feat`: New feature (minor version bump)
-- `fix`: Bug fix (patch version bump)
-- `docs`: Documentation only
-- `style`: Formatting, no code change
-- `refactor`: Code restructure, no behavior change
-- `test`: Adding/updating tests
-- `chore`: Maintenance tasks
-
-### Examples
-```bash
-feat(auth): add OAuth2 support
-fix(api): handle null response correctly
-docs: update installation instructions
-test(utils): add edge case coverage
-chore(deps): update dependencies
-```
-
-## Error Recovery
-
-### Tests Failing
-1. Read the error message carefully
-2. Check if it's a flaky test (run again)
-3. Check recent commits that might have caused it
-4. Fix the root cause, not just the symptom
-
-### Lint Errors
-1. Run auto-fix first (`--fix` flag)
-2. Manually fix remaining issues
-3. Don't disable rules without justification
-
-### Build Errors
-1. Check for type errors first
-2. Ensure dependencies are installed
-3. Check for missing files or imports
-
-## Memory Bank Protocol
-
-### Reading Context
-```bash
-# Always check before starting
-cat memory-bank/activeContext.md
-```
-
-### Updating Context
-```bash
-# After completing significant work
-cat >> memory-bank/activeContext.md << 'EOF'
-
-## Session: $(date +%Y-%m-%d)
-
-### Completed
-- [x] Description of completed work
-
-### For Next Agent
-- [ ] Remaining tasks
-EOF
-```
-
-## What NOT To Do
-
-- ❌ Don't make unrelated changes
-- ❌ Don't skip tests
-- ❌ Don't ignore linting errors
-- ❌ Don't commit without meaningful message
-- ❌ Don't push directly to main (use PRs)
-- ❌ Don't add dependencies without justification
-
-## Documentation Branding
-
-All jbcom repositories follow a unified design system for documentation.
-
-### Brand Requirements
-
-| Element | Specification |
-|---------|--------------|
-| Primary Color | Cyan `#06b6d4` |
-| Background | Dark `#0a0f1a` |
-| Heading Font | Space Grotesk |
-| Body Font | Inter |
-| Code Font | JetBrains Mono |
-
-### Reference Documents
-
-- `docs/DESIGN-SYSTEM.md` - Complete brand specifications
-- `docs/_static/jbcom-sphinx.css` - jbcom-branded CSS
-- `.cursor/rules/03-docs-branding.mdc` - Cursor rule for docs
-
-### Documentation Checklist
-
-Before pushing docs changes:
-- [ ] Uses jbcom color palette (dark theme)
-- [ ] Correct typography (Space Grotesk, Inter, JetBrains Mono)
-- [ ] Links are cyan (`#06b6d4`)
-- [ ] Code blocks have proper styling
-- [ ] Meets accessibility requirements
-
-### Do NOT
-
-- ❌ Use light theme as default
-- ❌ Use different primary colors
-- ❌ Create custom color schemes per-repo
-- ❌ Ignore accessibility requirements
-
-## Repository-Specific Instructions
-
-<!-- Add repository-specific agent instructions below -->
-
+## 🧠 Memory Bank
+Always update `memory-bank/activeContext.md` at the end of your session to ensure a smooth handoff to the next agent.
