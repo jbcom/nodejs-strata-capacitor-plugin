@@ -245,7 +245,7 @@ jobs:
           token: ${{ secrets.CI_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Claude Code
-        if: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+        if: env.ANTHROPIC_API_KEY != ''
         uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -253,7 +253,7 @@ jobs:
           allowed_bots: '*'
 
       - name: Claude unavailable
-        if: ${{ secrets.ANTHROPIC_API_KEY == '' }}
+        if: env.ANTHROPIC_API_KEY == ''
         env:
           GH_TOKEN: ${{ secrets.CI_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           ISSUE_NUM: ${{ github.event.issue.number }}
