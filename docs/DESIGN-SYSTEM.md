@@ -164,29 +164,80 @@ Include these fonts in all documentation pages:
 
 ## Documentation Site Requirements
 
+Each language ecosystem uses its best-fit documentation tooling with jbcom branding applied.
+
 ### Sphinx (Python)
 
-For Python projects using Sphinx:
+**Scaffold location**: `repository-files/python/docs/`
 
-1. **Theme**: Use `furo` or `sphinx-book-theme` with custom CSS
-2. **Custom CSS**: Include `jbcom-sphinx.css` in `docs/_static/`
-3. **Colors**: Override theme colors with jbcom palette
+| File | Purpose |
+|------|---------|
+| `conf.py` | Sphinx configuration |
+| `_static/jbcom-sphinx.css` | jbcom-branded theme CSS |
+| `index.rst` | Documentation root |
 
-### TypeDoc (TypeScript)
+Usage:
+1. Copy scaffold to your `docs/` directory
+2. Run `sphinx-build -b html docs docs/_build`
 
-For TypeScript projects using TypeDoc:
+### TypeDoc (TypeScript/Node.js)
 
-1. **Theme**: Use default with custom CSS
-2. **Custom CSS**: Include `jbcom-typedoc.css`
-3. **Colors**: Override with jbcom palette
+**Scaffold location**: `repository-files/nodejs/docs/`
 
-### MkDocs
+| File | Purpose |
+|------|---------|
+| `typedoc.json` | TypeDoc configuration |
+| `jbcom-typedoc.css` | jbcom-branded theme CSS |
 
-For projects using MkDocs:
+Usage:
+1. Copy scaffold to your `docs/` directory
+2. Run `npx typedoc`
 
-1. **Theme**: Use `material` theme
-2. **Palette**: Configure dark mode (`slate` scheme) with jbcom colors
-3. **Custom CSS**: Create custom stylesheet using CSS variables from this guide
+### doc2go (Go)
+
+**Scaffold location**: `repository-files/go/docs/`
+
+| File | Purpose |
+|------|---------|
+| `README.md` | Documentation guide |
+| `jbcom-doc2go.css` | jbcom-branded theme CSS |
+
+Usage:
+1. Install: `go install go.abhg.dev/doc2go@latest`
+2. Generate: `doc2go -out docs/api ./...`
+3. Apply branding: Copy `jbcom-doc2go.css` and inject into HTML
+
+Note: godoc is deprecated. Use [doc2go](https://go.abhg.dev/doc2go/) for modern, 
+module-aware static documentation with pkg.go.dev-like styling.
+
+### terraform-docs (Terraform)
+
+**Scaffold location**: `repository-files/terraform/docs/`
+
+| File | Purpose |
+|------|---------|
+| `README.md` | Documentation guide |
+| `.terraform-docs.yml` | terraform-docs config |
+
+Usage:
+1. Add `.terraform-docs.yml` to module root
+2. Run `terraform-docs markdown table .`
+
+### rustdoc (Rust)
+
+**Scaffold location**: `repository-files/rust/docs/`
+
+| File | Purpose |
+|------|---------|
+| `README.md` | Documentation conventions guide |
+| `jbcom-rustdoc.css` | jbcom-branded rustdoc CSS |
+
+Usage:
+1. Write doc comments in source code (`///` and `//!`)
+2. Generate with custom CSS:
+```bash
+RUSTDOCFLAGS="--extend-css docs/jbcom-rustdoc.css" cargo doc --no-deps
+```
 
 ### General Requirements
 
